@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  game-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://host.docker.internal:3306/game.db
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=Admin@1111
+      - SPRING_DATASOURCE_DRIVER_CLASS_NAME=com.mysql.cj.jdbc.Driver
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - SPRING_OUTPUT_ANSI_ENABLED=ALWAYS
+      - SERVER_PORT=8000
+    depends_on:
+      - build
+    networks:
+      - game-api-network
+
+  build:
+    image: mysql:8.0
+    environment:
+      - MYSQL_DATABASE=game.db
+      - MYSQL_ROOT_PASSWORD=Admin@1111
+    volumes:
+      - db-data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    networks:
+      - game-api-network
+
+networks:
+  game-api-network:
+    driver: bridge
+
+volumes:
+  db-data:
